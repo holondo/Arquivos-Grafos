@@ -85,17 +85,17 @@ void print_all(FILE *data)
 void print_interval(FILE *data, int start, int end)
 { 
     RECORD *n_record = new_record();
-    if(start > records_quantity(data)) return;
-    if(end > (records_quantity(data) - 1))
-        end = (records_quantity(data) - 1) ;
+    int reqQuantity = records_quantity(data) - 1;
+    if(start > reqQuantity) return;
 
     for (int i = start; i <= end; i++)
     {
         *n_record = recover_record(data, i);
+        if(i > reqQuantity || n_record->nUSP == -1) break;
+        if(i != start)
+            putchar('\n');
         print_record(*n_record);
-        if(i != end) putc('\n', stdout);
     }
-
     close_record(n_record);
 }
 
