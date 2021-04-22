@@ -22,6 +22,23 @@ RECORD* new_record(){
     return n_record;
 }
 
+//Desaloca a memoria de um registro.
+void close_record(RECORD *bye_record)
+{   
+    free(bye_record);
+}
+
+//Printa um registro formatado
+void print_record(RECORD n_record)
+{
+    printf("nUSP: %d\nNome: %s\nCurso: %s\nNota: %.2f\n", n_record.nUSP, n_record.nome, n_record.curso, n_record.nota);
+}
+
+
+void terminate_string(char **str)
+{
+
+}
 //Recupera um registro com posição pos especifica (0...)
 RECORD recover_record(FILE *data, int pos)
 {
@@ -37,7 +54,7 @@ RECORD recover_record(FILE *data, int pos)
         fread(&cur_record->nota, sizeof(float), 1, data);
     }
     RECORD ret = *cur_record;
-    free(cur_record);
+    close_record(cur_record);
     return ret;
 }
 
@@ -46,32 +63,49 @@ int records_quantity(FILE *data)
 {
     fseek(data, 0, SEEK_END);
 
-    return (ftell(data) / ( RECORD_SIZE - 1) );// verificar
+    return (int)( (ftell(data) / (long)( RECORD_SIZE - 1) ) );// verificar
 }
 
 void print_all(FILE *data)
 {
     RECORD *n_record = new_record();
-    *n_record = recover_record(data, 0 );
+    *n_record = recover_record(data, 0);
 
     for (int i = 0; i < records_quantity(data); i++)
     {
         *n_record = recover_record(data, i);
-        //print_record()
-    }    
+        print_record(*n_record);
+        if(i < records_quantity(data) - 1) putc('\n', stdout);
+    }
+
+    close_record(n_record);
 }
 
+//printa um intervalo absoluto de registros [0...]
 void print_interval(FILE *data, int start, int end)
 { 
     RECORD *n_record = new_record();
+    if(start > records_quantity(data)) return;
+    if(end > (records_quantity(data) - 1))
+        end = (records_quantity(data) - 1) ;
 
     for (int i = start; i <= end; i++)
     {
         *n_record = recover_record(data, i);
-        //print_record
+        print_record(*n_record);
+        if(i != end) putc('\n', stdout);
     }
 
+    close_record(n_record);
 }
 
+int print_record_byPos(FILE *data, int pos)
+{
+    RECORD n_record = recover_record(data, pos);
+    
+    printf("nUSP: %d\nNome: %s\nCurso: %s\nNota: %.2f\n", n_record.nUSP, n_record.nome, n_record.curso, n_record.nota);
+    
+    return 0;
+}
 
 

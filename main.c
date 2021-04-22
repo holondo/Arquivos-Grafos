@@ -4,6 +4,7 @@
 
 void menu(int opt, FILE *data)
 {
+    int start, end, pos;
     switch (opt)
     {
     case 1:
@@ -11,23 +12,23 @@ void menu(int opt, FILE *data)
         break;
     
     case 2:
-        print_interval(data, 0, (records_quantity(data) / 2));
+        print_interval(data, 0, (records_quantity(data) / 2) -1);
         break;
 
     case 3:
-        print_interval(data, (records_quantity(data) / 2), (records_quantity(data) - 1));
+        print_interval(data, (records_quantity(data) / 2) , (records_quantity(data) - 1));
         break;
 
     case 4:
-        int start, end;
+        
         scanf("%d %d", &start, &end);
-        print_interval(data, start, end);
+        print_interval(data, start-1, end-1);//-1 pq a função usa posições absolutas
         break;
 
     case 5:
-        int pos;
         scanf("%d", &pos);
-        //print_record(recover_record(data, pos));
+        print_record_byPos(data, pos-1);//-1 pq a função usa posições absolutas
+        break;
     
     default:
         break;
@@ -43,9 +44,10 @@ int main(int argc, char const *argv[])
     scanf("%s %d", fname, &opt);
 
     FILE *data = NULL;
-    if ( data = fopen(fname, "r+") == NULL)
+    if ( (data = fopen(fname, "r+") ) == NULL)
         puts("Error while opening file.");
 
-    
+    menu(opt, data);
+    fclose(data);    
     return 0;
 }
