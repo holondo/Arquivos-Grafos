@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "record.h"
 
+//menu para selecao de funcao no programa
 void menu(int opt, FILE *data)
 {
     int start, end, pos;
@@ -37,14 +38,14 @@ void menu(int opt, FILE *data)
 
 int main(int argc, char const *argv[])
 {
-    char fname[100];
+    char fname[100];//file name
     int opt = 0;
 
     //Ler o nome do arquivo e a operação
     scanf("%s %d", fname, &opt);
 
     FILE *data = NULL;
-    if ( (data = fopen(fname, "r+") ) == NULL)
+    if ( (data = fopen(fname, "r+") ) == NULL)//se não existir arq. com o nome ou arq. com problema
         puts("Error while opening file.");
 
     menu(opt, data);

@@ -34,12 +34,12 @@ void print_record(RECORD n_record)
     printf("nUSP: %d\nNome: %s\nCurso: %s\nNota: %.2f\n", n_record.nUSP, n_record.nome, n_record.curso, n_record.nota);
 }
 
-
-void terminate_string(char **str)
+/*void terminate_string(char **str)
 {
 
-}
-//Recupera um registro com posição pos especifica (0...)
+}*/
+
+//Recupera um registro com posição pos especifica [0...]
 RECORD recover_record(FILE *data, int pos)
 {
     RECORD *cur_record = new_record();
@@ -66,6 +66,7 @@ int records_quantity(FILE *data)
     return (int)( (ftell(data) / (long)( RECORD_SIZE - 1) ) );// verificar
 }
 
+//printa todos os registros do arquivo
 void print_all(FILE *data)
 {
     RECORD *n_record = new_record();
@@ -99,6 +100,7 @@ void print_interval(FILE *data, int start, int end)
     close_record(n_record);
 }
 
+//printa um registro com base na sua posição absoluta [0...]
 int print_record_byPos(FILE *data, int pos)
 {
     RECORD n_record = recover_record(data, pos);
