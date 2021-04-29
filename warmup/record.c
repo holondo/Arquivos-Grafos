@@ -110,4 +110,33 @@ int print_record_byPos(FILE *data, int pos)
     return 0;
 }
 
+void lineToRecord(RECORD *n_record)//TODO: Tudo
+{
+    int i = 0, j = 0;
+    char aux = '!';
+    char str_Record[4][MAX_STRING];
+    RECORD r_aux;
 
+    while (1)
+    {
+        aux = getchar();
+        if(aux == ',' || aux == ';' || aux == '\n' || aux == EOF)
+        {
+            str_Record[i][j] = '\0'; //verify i++
+            j = 0;
+            i++;
+            if(aux == '\n') break;
+            continue;
+        }
+        str_Record[i][j] = aux;
+        j++;
+    }
+
+    r_aux.nUSP = atoi(str_Record[0]);
+    r_aux.nota = atoi(str_Record[3]);
+
+    strcpy(r_aux.nome, str_Record[1]);
+    strcpy(r_aux.curso, str_Record[2]);
+
+    *n_record = r_aux;
+}

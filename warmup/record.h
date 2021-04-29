@@ -14,3 +14,4 @@ void print_all(FILE *data);
 void print_interval(FILE *data, int start, int end);
 void print_record(RECORD n_record);
 int print_record_byPos(FILE *data, int pos);
+void lineToRecord(RECORD *n_record);

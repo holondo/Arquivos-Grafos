@@ -38,7 +38,7 @@ void menu(int opt, FILE *data)
 
 int main(int argc, char const *argv[])
 {
-    char fname[100];//file name
+    /*char fname[100];//file name
     int opt = 0;
 
     //Ler o nome do arquivo e a operação
@@ -48,7 +48,10 @@ int main(int argc, char const *argv[])
     if ( (data = fopen(fname, "r+") ) == NULL)//se não existir arq. com o nome ou arq. com problema
         puts("Error while opening file.");
 
-    menu(opt, data);
-    fclose(data);    
+    menu(opt, data);*/
+
+    RECORD* aux = new_record();
+    lineToRecord(aux);
+    //fclose(data);    
     return 0;
 }
