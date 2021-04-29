@@ -38,20 +38,18 @@ void menu(int opt, FILE *data)
 
 int main(int argc, char const *argv[])
 {
-    /*char fname[100];//file name
+    char fname[100] = "reg.dat";//file name
     int opt = 0;
 
     //Ler o nome do arquivo e a operação
-    scanf("%s %d", fname, &opt);
+    //scanf("%s %d", fname, &opt);
 
     FILE *data = NULL;
     if ( (data = fopen(fname, "r+") ) == NULL)//se não existir arq. com o nome ou arq. com problema
         puts("Error while opening file.");
 
-    menu(opt, data);*/
-
-    RECORD* aux = new_record();
-    lineToRecord(aux);
+    csv2bin(data);
+    //menu(opt, data);
     //fclose(data);    
     return 0;
 }
