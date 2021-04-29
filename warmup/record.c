@@ -110,7 +110,7 @@ int print_record_byPos(FILE *data, int pos)
     return 0;
 }
 
-void lineToRecord(RECORD *n_record)//TODO: Tudo
+int lineToRecord(RECORD *n_record)//TODO: Tudo
 {
     int i = 0, j = 0;
     char aux = '!';
@@ -120,12 +120,14 @@ void lineToRecord(RECORD *n_record)//TODO: Tudo
     while (1)
     {
         aux = getchar();
+        if(aux == EOF && i == 0) return 0;
         if(aux == ',' || aux == ';' || aux == '\n' || aux == EOF)
         {
             str_Record[i][j] = '\0'; //verify i++
             j = 0;
             i++;
-            if(aux == '\n') break;
+            if(aux == EOF)break;
+            if(aux == '\n') break;            
             continue;
         }
         str_Record[i][j] = aux;
@@ -139,4 +141,29 @@ void lineToRecord(RECORD *n_record)//TODO: Tudo
     strcpy(r_aux.curso, str_Record[2]);
 
     *n_record = r_aux;
+    return 1;
+}
+
+void write_record(FILE *data, RECORD toWrite, int position)
+{
+    if(position > (records_quantity(data))) position = records_quantity(data);
+
+    fseek(data, position * RECORD_SIZE, SEEK_SET);
+
+    fwrite(&toWrite.nUSP, sizeof(int), 1, data);
+    fwrite(&toWrite.nome, MAX_STRING, 1, data);
+    fwrite(&toWrite.curso, MAX_STRING, 1, data);
+    fwrite(&toWrite.nota, sizeof(float), 1, data);
+}
+
+void csv2bin(FILE *data)
+{
+    RECORD *n_record = new_record();
+    int pos = records_quantity(data);
+    while (1)
+    {
+        if(!lineToRecord(n_record)) break;
+
+        write_record(data, *n_record, pos);
+    }
 }
