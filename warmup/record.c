@@ -63,7 +63,7 @@ int records_quantity(FILE *data)
 {
     fseek(data, 0, SEEK_END);
 
-    return (int)( (ftell(data) / (long)( RECORD_SIZE - 1) ) );// verificar
+    return (int)( (ftell(data) / (long)( RECORD_SIZE ) ) );// verificar
 }
 
 //printa todos os registros do arquivo
@@ -110,22 +110,24 @@ int print_record_byPos(FILE *data, int pos)
     return 0;
 }
 
+/*Le uma linha do CSV e a tranforma em um REGISTRO.
+    1 se concluido. 0 se EOF*/
 int lineToRecord(RECORD *n_record)//TODO: Tudo
 {
     int i = 0, j = 0;
-    char aux = '!';
-    char str_Record[4][MAX_STRING];
+    char aux = '!'; 
+    char str_Record[4][MAX_STRING];//Strings de informações obtidas do registro
     RECORD r_aux;
 
     while (1)
     {
         aux = getchar();
         if(aux == EOF && i == 0) return 0;
-        if(aux == ',' || aux == ';' || aux == '\n' || aux == EOF)
+        if(aux == ',' || aux == ';' || aux == '\n' || aux == EOF)//Se for final do campo
         {
-            str_Record[i][j] = '\0'; //verify i++
+            str_Record[i][j] = '\0'; //Finaliza string
             j = 0;
-            i++;
+            i++; //Proximo campo
             if(aux == EOF)break;
             if(aux == '\n') break;            
             continue;
@@ -134,16 +136,20 @@ int lineToRecord(RECORD *n_record)//TODO: Tudo
         j++;
     }
 
+    //Salva-se no registro valores numericos
     r_aux.nUSP = atoi(str_Record[0]);
     r_aux.nota = atoi(str_Record[3]);
 
+    //Salva-se no registro o texto
     strcpy(r_aux.nome, str_Record[1]);
     strcpy(r_aux.curso, str_Record[2]);
 
     *n_record = r_aux;
+    if(aux == EOF)return 0;
     return 1;
 }
 
+//Escreve um registro em certa posição dentro arquivo binário
 void write_record(FILE *data, RECORD toWrite, int position)
 {
     if(position > (records_quantity(data))) position = records_quantity(data);
@@ -156,14 +162,22 @@ void write_record(FILE *data, RECORD toWrite, int position)
     fwrite(&toWrite.nota, sizeof(float), 1, data);
 }
 
+//Lida com o CSV vindo do stdin lendo e escrevendo registros no arq. binario.
 void csv2bin(FILE *data)
 {
     RECORD *n_record = new_record();
     int pos = records_quantity(data);
+    int aux;
     while (1)
     {
-        if(!lineToRecord(n_record)) break;
+        aux = lineToRecord(n_record);
 
         write_record(data, *n_record, pos);
+        fflush(NULL);
+        pos++;
+        
+        if(!aux) break;
     }
+
+    close_record(n_record);
 }
