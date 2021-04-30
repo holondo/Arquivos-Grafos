@@ -30,6 +30,10 @@ void menu(int opt, FILE *data)
         scanf("%d", &pos);
         print_record_byPos(data, pos-1);//-1 pq a função usa posições absolutas
         break;
+
+    case 6:
+        csv2bin(data);
+        break;
     
     default:
         break;
@@ -38,18 +42,18 @@ void menu(int opt, FILE *data)
 
 int main(int argc, char const *argv[])
 {
-    char fname[100] = "reg.dat";//file name
+    char fname[100];//file name
     int opt = 0;
 
     //Ler o nome do arquivo e a operação
-    //scanf("%s %d", fname, &opt);
+    scanf("%s %d", fname, &opt);
 
     FILE *data = NULL;
     if ( (data = fopen(fname, "r+") ) == NULL)//se não existir arq. com o nome ou arq. com problema
         puts("Error while opening file.");
 
-    csv2bin(data);
-    //menu(opt, data);
-    //fclose(data);    
+    //print_interval(data, records_quantity(data) - 10, records_quantity(data) - 1);
+    menu(opt, data);
+    fclose(data);
     return 0;
 }
