@@ -29,7 +29,13 @@ void closeRecord(Student *bye_record)
     free(bye_record);
 }
 
-//----------Getters and Setters area----------
+//Printa um registro formatado
+void printRecord(Student *nRecord)
+{
+    printf("nUSP: %d\nNome: %s\nCurso: %s\nNota: %.2f\n", nRecord->nUSP, nRecord->nome, nRecord->curso, nRecord->nota);
+}
+
+//--------------------Getters area--------------------
 
 //Returns nUSP from a record
 int getnUSP(Student *thisRec)
@@ -57,6 +63,38 @@ int getCourse(char curso[MAX_STRING], Student *thisRec)
 int getGrade(Student *thisRec)
 {
     return thisRec->nota;
+}
+
+//--------------------Setters area--------------------
+
+int setnUSP(Student *thisRec, int nUSP)
+{
+    thisRec->nUSP = nUSP;
+    return SUCCESS_;
+}
+
+int setName(Student *thisRec, char nome[MAX_STRING])
+{
+    strcpy(thisRec->nome, nome);
+    return SUCCESS_;
+}
+
+int setSurname(Student *thisRec, char sobrenome[MAX_STRING])
+{
+    strcpy(thisRec->sobrenome, sobrenome);
+    return SUCCESS_;
+}
+
+int setCourse(Student *thisRec, char curso[MAX_STRING])
+{
+    strcpy(thisRec->curso, curso);
+    return SUCCESS_;
+}
+
+int setGrade(Student *thisRec, int nota)
+{
+    thisRec->nota = nota;
+    return SUCCESS_;
 }
 
 /*Le uma linha do CSV e a tranforma em um REGISTRO.

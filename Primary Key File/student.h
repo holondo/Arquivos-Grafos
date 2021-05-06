@@ -22,13 +22,19 @@
 typedef struct _STUDENT Student;
 
 Student* newRecord();
-void print_record(Student nRecord);
 int lineToRecord(Student *nRecord);
+void printRecord(Student *nRecord);
 
 int getnUSP(Student *thisRec);
 int getName(char nome[MAX_STRING], Student *thisRec);
 int getSurname(char sobrenome[MAX_STRING], Student *thisRec);
 int getCourse(char curso[MAX_STRING], Student *thisRec);
 int getGrade(Student *thisRec);
+
+int setnUSP(Student *thisRec, int nUSP);
+int setName(Student *thisRec, char nome[MAX_STRING]);
+int setSurname(Student *thisRec, char sobrenome[MAX_STRING]);
+int setCourse(Student *thisRec, char curso[MAX_STRING]);
+int setGrade(Student *thisRec, int nota);
 
 #endif
