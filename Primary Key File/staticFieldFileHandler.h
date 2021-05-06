@@ -3,7 +3,9 @@
 
 #include "student.h"
 
+int recordsQuantity(FILE *data);
+int recoverRecord(Student *curRecord,FILE *data, int pos);
 void writeRecordBin(FILE *data, Student *toWrite, int position);
-int records_quantity(FILE *data);
+int sequentialSearch(Student *toFill, FILE *data, int nUSPToSearch);
 
 #endif
