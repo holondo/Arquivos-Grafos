@@ -1,6 +1,8 @@
 #ifndef STUDENT_H_
 #define STUDENT_H
 
+#define DEBUG_ 1;
+
 #define MAX_STRING 50
 #define RECORD_SIZE 108
 
@@ -20,7 +22,13 @@
 typedef struct _STUDENT Student;
 
 Student* newRecord();
-void print_record(Student n_record);
-int lineToRecord(Student *n_record);
+void print_record(Student nRecord);
+int lineToRecord(Student *nRecord);
+
+int getnUSP(Student *thisRec);
+int getName(char nome[MAX_STRING], Student *thisRec);
+int getSurname(char sobrenome[MAX_STRING], Student *thisRec);
+int getCourse(char curso[MAX_STRING], Student *thisRec);
+int getGrade(Student *thisRec);
 
 #endif
