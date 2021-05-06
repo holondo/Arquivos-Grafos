@@ -3,5 +3,7 @@
 
 #include "student.h"
 
+void writeRecordBin(FILE *data, Student *toWrite, int position);
+int records_quantity(FILE *data);
 
 #endif
