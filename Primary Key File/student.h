@@ -4,7 +4,7 @@
 #define DEBUG_ 1;
 
 #define MAX_STRING 50
-#define RECORD_SIZE 108
+#define RECORD_SIZE 158
 
 //Function not successful
 #define ERROR_ 0;
@@ -22,6 +22,7 @@
 typedef struct _STUDENT Student;
 
 Student* newRecord();
+void closeRecord(Student *bye_record);
 int lineToRecord(Student *nRecord);
 void printRecord(Student *nRecord);
 
