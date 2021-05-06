@@ -29,6 +29,7 @@
 void menu(FILE* data)
 {
     char strArg[MAX_STRING];
+    int nUSPToSearch;
     Student *auxRec = newRecord();
 
     while (scanf("%s", strArg))
@@ -36,12 +37,14 @@ void menu(FILE* data)
         if(!strcmp(strArg, "insert")) //strcmp() returns 0 if strings are equal
         {
             lineToRecord(auxRec);
-            writeRecordBin(data, auxRec, records_quantity(data));
+            writeRecordBin(data, auxRec, recordsQuantity(data));
         }
 
         if(!strcmp(strArg, "search"))
         {
-            
+            scanf("%d", &nUSPToSearch);
+            if(sequentialSearch(auxRec, data, nUSPToSearch)) printRecord(auxRec);
+            else printf("Registro nao encontrado!\n");
         }
 
         if(!strcmp(strArg, "delete"))
@@ -51,6 +54,8 @@ void menu(FILE* data)
 
         if(!strcmp(strArg, "exit")) return;
     }
+
+    closeRecord(auxRec);
 }
 
 int main(int argc, char const *argv[])
