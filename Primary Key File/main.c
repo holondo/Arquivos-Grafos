@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "student.h"
+#include "staticFieldFileHandler.h"
 
 #define FILE_NAME "rec.bin"
 
@@ -28,12 +29,14 @@
 void menu(FILE* data)
 {
     char strArg[MAX_STRING];
+    Student *auxRec = newRecord();
 
     while (scanf("%s", strArg))
     {
         if(!strcmp(strArg, "insert")) //strcmp() returns 0 if strings are equal
         {
-            //lineToRecord(data);
+            lineToRecord(auxRec);
+            writeRecordBin(data, auxRec, records_quantity(data));
         }
 
         if(!strcmp(strArg, "search"))
