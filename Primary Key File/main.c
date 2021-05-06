@@ -29,24 +29,24 @@ void menu(FILE* data)
 {
     char strArg[MAX_STRING];
 
-    while (scanf("%d ", strArg))
+    while (scanf("%s", strArg))
     {
-        if(strcmp(strArg, "insert"))
+        if(!strcmp(strArg, "insert")) //strcmp() returns 0 if strings are equal
         {
             //lineToRecord(data);
         }
 
-        if(strcmp(strArg, "search"))
+        if(!strcmp(strArg, "search"))
         {
             
         }
 
-        if(strcmp(strArg, "delete"))
+        if(!strcmp(strArg, "delete"))
         {
             
         }
 
-        if(strcmp(strArg, "exit")) return;
+        if(!strcmp(strArg, "exit")) return;
     }
 }
 
