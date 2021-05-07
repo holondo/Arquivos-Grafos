@@ -1,6 +1,6 @@
 #include "staticFieldFileHandler.h"
 
-//Retorna a quantidade de registros no arquivo (1...)
+//Retorns the number of records in the file. [1...]
 int recordsQuantity(FILE *data)
 {
     fseek(data, 0, SEEK_END);
@@ -8,7 +8,7 @@ int recordsQuantity(FILE *data)
     return (int)( (ftell(data) / (long)( RECORD_SIZE ) ) );// verificar
 }
 
-//Recupera um registro com posição pos especifica [0...]
+//Recovers a record with a specific position [0...]
 int recoverRecord(Student *curRecord,FILE *data, int pos)
 {
     int nUSP, nota;
@@ -35,7 +35,7 @@ int recoverRecord(Student *curRecord,FILE *data, int pos)
     else return ERROR_;
 }
 
-//Escreve um registro em certa posição dentro arquivo binário
+//Writes the record in a specific position in the file
 void writeRecordBin(FILE *data, Student *toWrite, int position)
 {
     if(position > (recordsQuantity(data))) position = recordsQuantity(data);
@@ -53,13 +53,17 @@ void writeRecordBin(FILE *data, Student *toWrite, int position)
     fwrite(&nota, sizeof(float), 1, data);
 }
 
+/*Searches sequentially for a specific nUSP and recovers its information into a given Structure
+[RETURN]:
+-1 if record not found.
+(int)position of found record in file [0...]*/
 int sequentialSearch(Student *toFill, FILE *data, int nUSPToSearch)
 {
     int verifier, lastRecord = recordsQuantity(data), counter = 0;
 
     while(1)
     {
-        if(counter > lastRecord) return ERROR_;
+        if(counter > lastRecord) return REMOVED_;
 
         fseek(data, counter * RECORD_SIZE, SEEK_SET);
         fread(&verifier, sizeof(int), 1, data);
@@ -71,5 +75,15 @@ int sequentialSearch(Student *toFill, FILE *data, int nUSPToSearch)
     
     recoverRecord(toFill, data, counter);
 
-    return SUCCESS_;    
+    return counter;    
+}
+
+int deleteRecordLogically(FILE *data, int pos)
+{
+    int setter = -1;
+    if(data == NULL || pos > recordsQuantity(data)) return ERROR_;
+
+    fseek(data, pos * RECORD_SIZE, SEEK_SET);
+    fwrite(&setter, sizeof(int), 1, data);
+    return SUCCESS_;
 }
