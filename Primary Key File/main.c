@@ -5,7 +5,10 @@
 
 #define FILE_NAME "rec.bin"
 
-/*int getArg(char strArg[MAX_STRING])
+/*
+This program was created to insert, search and delete students' records, based Student structure, from a binary file.
+
+int getArg(char strArg[MAX_STRING])
 {
     char aux = '\0';
     int i = 0;
@@ -37,19 +40,22 @@ void menu(FILE* data)
         if(!strcmp(strArg, "insert")) //strcmp() returns 0 if strings are equal
         {
             lineToRecord(auxRec);
-            writeRecordBin(data, auxRec, recordsQuantity(data));
+            if(sequentialSearch(auxRec, data, getnUSP(auxRec) != -1)) writeRecordBin(data, auxRec, recordsQuantity(data));
+            else printf("O Registro ja existe!\n");
         }
 
         if(!strcmp(strArg, "search"))
         {
             scanf("%d", &nUSPToSearch);
-            if(sequentialSearch(auxRec, data, nUSPToSearch)) printRecord(auxRec);
+            if(sequentialSearch(auxRec, data, nUSPToSearch) != -1) printRecord(auxRec);
             else printf("Registro nao encontrado!\n");
         }
 
         if(!strcmp(strArg, "delete"))
         {
-            
+            scanf("%d", &nUSPToSearch);
+            nUSPToSearch = sequentialSearch(auxRec, data, nUSPToSearch);
+            deleteRecordLogically(data, nUSPToSearch);
         }
 
         if(!strcmp(strArg, "exit")) return;
