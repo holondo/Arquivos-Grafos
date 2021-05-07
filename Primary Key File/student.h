@@ -15,6 +15,8 @@
 //Function alert for next iterations
 #define ALERT_ -1;
 
+#define REMOVED_ -1 ;
+
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"

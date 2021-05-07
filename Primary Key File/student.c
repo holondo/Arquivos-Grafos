@@ -9,7 +9,7 @@ struct _STUDENT
     float nota;
 };
 
-//Retorna um ponteiro para um novo registro vazio
+//Retorns a pointer to a new allocated and inicialized record.
 Student* newRecord(){
     Student *newStudent;
     newStudent = malloc(sizeof(Student));
@@ -23,16 +23,17 @@ Student* newRecord(){
     return newStudent;
 }
 
-//Desaloca a memoria de um registro.
+//Frees a record's allocated memory 
 void closeRecord(Student *bye_record)
 {   
     free(bye_record);
 }
 
-//Printa um registro formatado
+//Prints a formatted record
 void printRecord(Student *nRecord)
 {
-    printf("nUSP: %d\nNome: %s\nCurso: %s\nNota: %.2f\n", nRecord->nUSP, nRecord->nome, nRecord->curso, nRecord->nota);
+    printf("-------------------------------\nUSP number: %d\nName: %s\nSurname: %s\nCourse: %s\nTest grade: %.2f\n-------------------------------\n"
+    , nRecord->nUSP, nRecord->nome, nRecord->sobrenome, nRecord->curso, nRecord->nota);
 }
 
 //--------------------Getters area--------------------
@@ -97,8 +98,8 @@ int setGrade(Student *thisRec, int nota)
     return SUCCESS_;
 }
 
-/*Le uma linha do CSV e a tranforma em um REGISTRO.
-    1 se concluido. 0 se EOF*/
+/*Reads a CSV formatted line and turns it into a Student struct
+    1 if concluded. 0 if EOF*/
 int lineToRecord(Student *nRecord)
 {
     int i = 0, j = 0;
