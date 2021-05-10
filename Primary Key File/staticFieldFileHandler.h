@@ -8,5 +8,6 @@ int recoverRecord(Student *curRecord,FILE *data, int pos);
 void writeRecordBin(FILE *data, Student *toWrite, int position);
 int sequentialSearch(Student *toFill, FILE *data, int nUSPToSearch);
 int deleteRecordLogically(FILE *data, int pos);
+void printAll(FILE *data);
 
 #endif

@@ -39,7 +39,6 @@ int recoverRecord(Student *curRecord,FILE *data, int pos)
 void writeRecordBin(FILE *data, Student *toWrite, int position)
 {
     if(position > (recordsQuantity(data))) position = recordsQuantity(data);
-
     fseek(data, position * RECORD_SIZE, SEEK_SET);
 
     int nUSP = getnUSP(toWrite), nota = getGrade(toWrite);
@@ -49,8 +48,10 @@ void writeRecordBin(FILE *data, Student *toWrite, int position)
     getCourse(curso, toWrite);
     fwrite(&nUSP, sizeof(int), 1, data);
     fwrite(&nome, MAX_STRING, 1, data);
+    fwrite(&sobrenome, MAX_STRING, 1, data);
     fwrite(&curso, MAX_STRING, 1, data);
     fwrite(&nota, sizeof(float), 1, data);
+    fflush(NULL);
 }
 
 /*Searches sequentially for a specific nUSP and recovers its information into a given Structure
@@ -60,10 +61,9 @@ void writeRecordBin(FILE *data, Student *toWrite, int position)
 int sequentialSearch(Student *toFill, FILE *data, int nUSPToSearch)
 {
     int verifier, lastRecord = recordsQuantity(data), counter = 0;
-
     while(1)
     {
-        if(counter > lastRecord) return REMOVED_;
+        if(counter > lastRecord) return ALERT_;
 
         fseek(data, counter * RECORD_SIZE, SEEK_SET);
         fread(&verifier, sizeof(int), 1, data);
@@ -86,4 +86,19 @@ int deleteRecordLogically(FILE *data, int pos)
     fseek(data, pos * RECORD_SIZE, SEEK_SET);
     fwrite(&setter, sizeof(int), 1, data);
     return SUCCESS_;
+}
+
+//printa todos os registros do arquivo
+void printAll(FILE *data)
+{
+    Student *n_record = newRecord();
+
+    for (int i = 0; i < recordsQuantity(data); i++)
+    {
+        recoverRecord(n_record, data, i);
+        printRecord(n_record);
+        if(i < recordsQuantity(data) - 1) putc('\n', stdout);
+    }
+
+    closeRecord(n_record);
 }
