@@ -39,9 +39,17 @@ void menu(FILE* data)
     {
         if(!strcmp(strArg, "insert")) //strcmp() returns 0 if strings are equal
         {
-            lineToRecord(auxRec);
-            if(sequentialSearch(auxRec, data, getnUSP(auxRec) != -1)) writeRecordBin(data, auxRec, recordsQuantity(data));
-            else printf("O Registro ja existe!\n");
+            if(lineToRecord(auxRec))
+            {
+                if(sequentialSearch(auxRec, data, getnUSP(auxRec)) == -1)
+                {
+                    writeRecordBin(data, auxRec, recordsQuantity(data));
+                }
+                else
+                {
+                    printf("O Registro ja existe!\n");
+                }
+            }
         }
 
         if(!strcmp(strArg, "search"))
@@ -56,6 +64,11 @@ void menu(FILE* data)
             scanf("%d", &nUSPToSearch);
             nUSPToSearch = sequentialSearch(auxRec, data, nUSPToSearch);
             deleteRecordLogically(data, nUSPToSearch);
+        }
+
+        if(!strcmp(strArg, "print"))
+        {
+            printAll(data);
         }
 
         if(!strcmp(strArg, "exit")) return;
