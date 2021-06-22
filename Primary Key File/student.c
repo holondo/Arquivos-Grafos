@@ -32,6 +32,7 @@ void closeRecord(Student *bye_record)
 //Prints a formatted record
 void printRecord(Student *nRecord)
 {
+    if(nRecord->nUSP == -1) return; 
     printf("-------------------------------\nUSP number: %d\nName: %s\nSurname: %s\nCourse: %s\nTest grade: %.2f\n-------------------------------\n"
     , nRecord->nUSP, nRecord->nome, nRecord->sobrenome, nRecord->curso, nRecord->nota);
 }
