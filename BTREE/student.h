@@ -15,7 +15,7 @@ class student
 
         void setNUSP(int nUSP);
         void setNome(string nome);
-        void setSobrenome(string nome);
+        void setSobrenome(string sobrenome);
         void setCurso(string curso);
         void setNota(float nota);
 

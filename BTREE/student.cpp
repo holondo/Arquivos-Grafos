@@ -1,4 +1,14 @@
 #include "student.h"
+
+student::student(int nUSP, string nome, string sobrenome, string curso, float nota)
+{
+    setNUSP(nUSP);
+    setNome(nome);
+    setSobrenome(sobrenome);
+    setCurso(curso);
+    setNota(nota);
+}
+
 //Setters area
 void student::setNUSP(int nUSP)
 {
@@ -8,9 +18,9 @@ void student::setNome(string nome)
 {
     this->nome = nome;
 }
-void student::setSobrenome(string nome)
+void student::setSobrenome(string sobrenome)
 {
-    this->nome = nome;
+    this->sobrenome = sobrenome;
 }
 void student::setCurso(string curso)
 {
@@ -45,8 +55,8 @@ float student::getNota()
 
 string student::toString()
 {
-    string toReturn = "−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−";
-    toReturn += "nUSP: " + this->getNUSP() + '\n';
+    string toReturn = "−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−\n";
+    toReturn += "nUSP: " + to_string(this->getNUSP()) + '\n';
     toReturn += "Nome: " + this->getNome() + '\n';
     toReturn += "Sobrenome: " + this->getSobrenome() + '\n';
     toReturn += "Curso: " + this->getCurso() + '\n';
