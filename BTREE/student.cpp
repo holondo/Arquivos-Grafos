@@ -18,7 +18,7 @@ void student::setNome(string nome)
 {
     this->nome = nome;
 }
-void student::setSobrenome(string sobrenome)
+void student::setSobrenome(string nome)
 {
     this->sobrenome = sobrenome;
 }
