@@ -2,22 +2,28 @@
 #define PAGESIZE 4096
 #define TREEHEADER PAGESIZE8
 #define MAXKEYS 204
+#define ORDER MAXKEYS + 1
 
 class Page
 {
     private:
-        short numberOfKeys ;
+        short numberOfKeys;
         bool leafStatus;
+        void insertNodeInOrder(Node *toInsert);
+        void insertionSort();
     public:
-        Node records[MAXKEYS];//Talvez usar NOde*...Provavel q sim
-        long childs[MAXKEYS + 1];
+        Node *records[MAXKEYS];//Talvez usar NOde*...Provavel q sim
+        long childs[ORDER];
 
         Page();
         Page(bool isLeaf);
 
-        void Page::setNumberOfKeys(int amnt);
-        void Page::setLeaf(bool isLeaf);
+        void setNumberOfKeys(int amnt);
+        void setLeaf(bool isLeaf);
 
         int getNumberOfKeys();
         bool isLeaf();
+        bool isFull();
+
+        int insertRecord(Node *toInsert);
 };
