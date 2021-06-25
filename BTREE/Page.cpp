@@ -66,7 +66,7 @@ int Page::insertRecord(Node* toInsert)
 
     if(this->isFull())
     {
-
+        
     }
 
     else
@@ -82,7 +82,7 @@ void Page::insertionSort()
 {
     Node* key;
     int i, j;
-    for (i = 1; i < this->getNumberOfKeys(); i++)
+    for (i = 1; i < this->getNumberOfKeys()+1; i++)
     {
         key = this->records[i];
         j = i - 1;
@@ -94,4 +94,46 @@ void Page::insertionSort()
         }
         this->records[j + 1] = key;
     }
+}
+
+/* l: left side of current array
+    r: right side of current array
+    
+    Returns: position in array
+            -1 if absent in array
+
+    throws: position where key should be*/
+int Page::keyBinarySearch(int key, int l, int r)
+{
+    if(this->getNumberOfKeys() == 0) throw 0;
+    if (r >= l)
+    {
+        int mid = l + (r - l) / 2;
+
+        if (this->records[mid]->getKey() == key)
+            return mid;
+
+        if (this->records[mid]->getKey() > key)
+            return keyBinarySearch(key, l, mid - 1);
+
+        if(r == l) 
+        {
+            if(key > l) throw l+1;
+            throw l;
+        }
+        return keyBinarySearch(key, mid + 1, r);
+    }
+    return -1;
+}
+
+string Page::toString()
+{
+    string toReturn = "";
+    for (int i = 0; i < this->getNumberOfKeys(); i++)
+    {
+        toReturn += "Key :" + to_string(this->records[i]->getKey());
+        toReturn += "\tRRN :" + to_string(this->records[i]->getRRN()) + '\n';
+    }
+    
+    return toReturn;
 }
