@@ -14,7 +14,7 @@ class Page
         void insertionSort();
     public:
         Node *records[MAXKEYS];//Talvez usar NOde*...Provavel q sim
-        long childs[ORDER];
+        long childs[ORDER];//children****
 
         Page();
         Page(bool isLeaf);
