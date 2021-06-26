@@ -71,7 +71,7 @@ int Page::insertRecord(Node* toInsert)
 
     else
     {
-        insertNodeInOrder(toInsert);
+        this->insertNodeInOrder(toInsert);
         this->setNumberOfKeys(this->getNumberOfKeys() + 1);
         return 1;
     }
