@@ -2,6 +2,9 @@
 #include "student.h"
 #include <iostream>
 #include <fstream>
+#define NKEYS_PLACE 4088
+#define RECORD_RRN_PLACE 816
+#define CHIDREN_RRN_PLACE 2448
 
 class BTREE
 {
@@ -23,4 +26,6 @@ class BTREE
 
         void writePage(Page* toWrite, long pageRRN);
         long getRootRRN();
+
+        void close();
 };
