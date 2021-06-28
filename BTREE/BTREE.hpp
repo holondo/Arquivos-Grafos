@@ -1,4 +1,7 @@
+#ifndef BTREE_CLASS
+#define BTREE_CLASS
 #include "Page.h"
+
 #include "student.h"
 #include <iostream>
 #include <fstream>
@@ -29,3 +32,4 @@ class BTREE
 
         void close();
 };
+#endif

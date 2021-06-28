@@ -36,32 +36,57 @@ long BTREE::getRootRRN()
 void BTREE::insertStudent(student *toInsert)
 {
     if(toInsert == nullptr) throw "Estudante vazio";
-
+    if(DEBUG) cout << "iniciando inserção. Estudante => " << toInsert->getNome() << '\n';
     if(this->getRootRRN() == -1)//Se a arvore esta vazia
     {
         Page* rootPage = new Page();
-        Node* studentNode = new Node(toInsert->getNUSP(), rootPage->getNumberOfKeys());
+        Node* studentNode = toInsert->WriteInFile();
+        
         rootPage->insertRecord(studentNode);
-        //this->writeRecord();
         this->writePage(rootPage, 0);
         this->setRoot(0);
     }
 
     else
     {
+        if(DEBUG) cout << "Arvore não estava vazia\n";
+        long placeOnTree = -1;
+        try
+        {
+            placeOnTree = this->searchOnTree(toInsert->getNUSP());
+            if(DEBUG) cout << "Estudante encontrado na página => " << placeOnTree << '\n';
+        }
+        catch(long pageRRNToInsert)
+        {
+            if(DEBUG) cout << "Inserindo novo estudante na página => " << pageRRNToInsert << '\n';
+            if(pageRRNToInsert != -1)
+            {
+                Node* currentNode = toInsert->WriteInFile();
+                Page* originalLeafToInsert = this->loadPage(pageRRNToInsert);
+                Page* splittedLeaf;
+                Page* promottedPage;
 
+                if(originalLeafToInsert->isFull())
+                {
+                    splittedLeaf = originalLeafToInsert->split();
+                    splittedLeaf->insertRecord(currentNode);
+                }
+                else
+                {
+                    originalLeafToInsert->insertRecord(currentNode);
+                    this->writePage(originalLeafToInsert, pageRRNToInsert);
+                }
+            }
+        }
+        
     }
-
-    // long rrnOnTree /*= searchOnTree(toInsert->key)*/;
-    // //if(rrnOnTree != -1)throw "O registro já existe!";
-
-    // //this->recordFile->writeToDatafile(record);
-    // Node* currentNode = new Node(toInsert->getNUSP(), rrnOnTree);
 }
 
-/*Returns: pageRRN if found.
+/*Returns:
+            pageRRN if found.
             -1 if not found
-    throws: pageRRN if not found && page is leaf
+    throws:
+            pageRRN if not found && page is leaf
             -1 if tree is empty*/
 long BTREE::searchOnTree(int key)
 {
@@ -73,6 +98,7 @@ long BTREE::searchOnTree(int key)
     }
     catch(long shouldBe)
     {
+        if(DEBUG) cout << "Volta a Search on tree. Chave throw => " << shouldBe << '\n';
         throw shouldBe;
     }
     return pageRRN;
@@ -83,17 +109,18 @@ long BTREE::searchOnTree(int key)
 long BTREE::recursiveSearch(long pageRRN, int key)
 {
     Page *currentPage = loadPage(pageRRN);
-    if(DEBUG)cout << "Página carregada:\n\t***\n" << currentPage->toString();
+    if(DEBUG)cout << "Recursive search - Página carregada:\n\t***\n" << currentPage->toString();
     
     int keyPos = -1;
 
     try
     {
-        keyPos = currentPage->keyBinarySearch(key, 0, currentPage->getNumberOfKeys());
+        keyPos = currentPage->keyBinarySearch(key, 0, currentPage->getNumberOfKeys() -1);
         if(keyPos != -1) return pageRRN;//if key is not in the array
     }
     catch(int shouldBe)
     {
+        if(DEBUG) cout << "Recursive search - de volta\n\t Proxima pag =>" << currentPage->childs[shouldBe] << '\n';
         if(currentPage->childs[shouldBe] == -1)
             throw pageRRN;
 
@@ -159,6 +186,7 @@ Page* BTREE::loadPage(long pageRRN)
     this->treeFile->read((char *)&leafStatus, sizeof(bool));
     pageToLoad->setLeaf(leafStatus);
 
+    //Reading keysArray
     this->treeFile->seekg( ( ((pageRRN+1) * PAGESIZE)), ios::beg);
     for(int i = 0; i < keysAmnt; i++)
     {   
@@ -168,6 +196,7 @@ Page* BTREE::loadPage(long pageRRN)
         pageToLoad->records[i] = nodeToLoad;
     }
     
+    //Reading RRN array
     this->treeFile->seekg( ( ((pageRRN+1) * PAGESIZE) + RECORD_RRN_PLACE), ios::beg);
     for(int i = 0; i < keysAmnt; i++)
     {   
@@ -176,6 +205,7 @@ Page* BTREE::loadPage(long pageRRN)
         nodeToLoad->setRRN(RRNBuffer);
     }
 
+    //Reading childrenArray
     this->treeFile->seekg( ( ((pageRRN+1) * PAGESIZE) + CHIDREN_RRN_PLACE), ios::beg);
     for(int i = 0; i < ORDER; i++)
     {   
