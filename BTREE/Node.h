@@ -1,3 +1,6 @@
+#ifndef NODE_CLASS
+#define NODE_CLASS
+
 #define DEFAULT -1;
 using namespace std;
 class Node
@@ -16,3 +19,4 @@ class Node
         long getRRN();
 };
 
+#endif
