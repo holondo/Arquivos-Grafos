@@ -9,6 +9,108 @@ student::student(int nUSP, string nome, string sobrenome, string curso, float no
     setNota(nota);
 }
 
+//File area
+bool student::CreateFile(){
+  
+  FILE* TestArchive;
+  if((TestArchive=fopen("students.bin","ab+"))==NULL){
+    return false;
+
+  }
+  fclose(TestArchive);
+  return true;
+}
+
+void student::ReadInFile(long RRN){
+    FILE* arq;
+    if(!CreateFile()){
+      return;
+    }
+    if((arq=fopen("students.bin","rb+"))==NULL){
+      cout << "nao foi possivel abrir o arquivo students.bin para leitura"<< endl;
+      return;
+    }
+    fseek(arq,RRN,SEEK_SET);
+    transformToCharArray(arq);
+
+    fclose(arq);
+}
+
+Node* student::WriteInFile(){
+    FILE* arq;
+    long RRN;
+    char CopyString[50];
+    if(!CreateFile()){
+      return NULL;
+    }
+    if((arq=fopen("students.bin","rb+"))==NULL){
+      cout << "nao foi possivel abrir o arquivo students.bin para a escrita"<< endl;
+      return NULL;
+    }
+    
+    fseek(arq,0,SEEK_END);
+    RRN=ftell(arq)/(STUDENT_SIZE+1);//dando erro
+    justWrite(arq);
+    Node* CurrentNode = new Node(nUSP,RRN);
+
+    fclose(arq);
+    return CurrentNode;
+}
+
+Node* student::UpdateInFile(Node* AttNode){
+    FILE* arq;
+    if(!CreateFile()){
+      return NULL;
+    }
+    if((arq=fopen("students.bin","rb+"))==NULL){
+      cout << "nao foi possivel abrir o arquivo students.bin para a atualizacao"<< endl;
+      return NULL;
+    }
+    fseek(arq,AttNode->getRRN(),SEEK_SET);
+    justWrite(arq);
+    fclose(arq);
+    AttNode->setKey(nUSP);
+    return AttNode;
+}
+
+void student::justWrite(FILE* arq){
+  char CopyString[50];
+  fwrite(&nUSP,sizeof(int),1,arq);
+  strcpy(CopyString,nome.c_str());
+  fwrite(CopyString,MAX_STRING,1,arq);
+  strcpy(CopyString,sobrenome.c_str());
+  fwrite(CopyString,MAX_STRING,1,arq);
+  strcpy(CopyString,curso.c_str());
+  fwrite(CopyString,MAX_STRING,1,arq);
+  fwrite(&nota,sizeof(float),1,arq);
+}
+
+void student::transformToCharArray(FILE* arq){
+  char CopyString[50];
+  fread(&nUSP,sizeof(int),1,arq);
+  fread(CopyString,50,1,arq);
+  nome.clear();
+
+  for(long unsigned int i=0;i<strlen(CopyString);i++){
+    nome+=CopyString[i];
+  }
+
+  fread(CopyString,50,1,arq);
+  sobrenome.clear();
+  for(long unsigned int i=0;i<strlen(CopyString);i++){
+    sobrenome+=CopyString[i];
+  }
+
+  strcpy(CopyString,curso.c_str());
+  curso.clear();
+  for(long unsigned int i=0;i<strlen(CopyString);i++){
+    curso+=CopyString[i];
+  }
+  fread(CopyString,50,1,arq);
+
+  fread(&nota,sizeof(float),1,arq);
+}
+
 //Setters area
 void student::setNUSP(int nUSP)
 {
