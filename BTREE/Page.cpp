@@ -73,6 +73,7 @@ int Page::insertRecord(Node* toInsert)
     {
         this->insertNodeInOrder(toInsert);
         this->setNumberOfKeys(this->getNumberOfKeys() + 1);
+        if(DEBUG) cout << "Insert Record - Inserido: " << toInsert->getKey() << "\tRRN: " << toInsert->getRRN() << '\n';
         return 1;
     }
     return 0;
@@ -105,9 +106,12 @@ void Page::insertionSort()
     throws: position where key should be*/
 int Page::keyBinarySearch(int key, int l, int r)
 {
+    // if(DEBUG) cout << "Busca binária.\n\t nChaves=> " << this->getNumberOfKeys() <<  '\n';
+    // if(DEBUG) cout << "\tL => " << l << "\tR => " << r << '\n';
     if(this->getNumberOfKeys() == 0) throw 0;
     if (r >= l)
     {
+        
         int mid = l + (r - l) / 2;
 
         if (this->records[mid]->getKey() == key)
@@ -116,14 +120,42 @@ int Page::keyBinarySearch(int key, int l, int r)
         if (this->records[mid]->getKey() > key)
             return keyBinarySearch(key, l, mid - 1);
 
+
         if(r == l) 
         {
+            //if(DEBUG) cout << "L == R. Throw => " << l << '\n';
             if(key > l) throw l+1;
             throw l;
         }
+
         return keyBinarySearch(key, mid + 1, r);
     }
     return -1;
+}
+
+Page* Page::split()
+{
+    int mid = ( this->getNumberOfKeys() / 2);
+
+    Page* splitted = new Page(this->isLeaf());
+
+    for (int i = mid; i < this->getNumberOfKeys(); i++)
+    {
+        splitted->insertRecord(this->records[i]);
+        this->records[i] = nullptr;
+    }
+
+    if(!this->isLeaf())
+    {   for (int i = mid; i < getNumberOfKeys() + 1; i++)
+        {
+            splitted->childs[i - mid] = this->childs[i];
+            this->childs[i] = -1;
+        }
+    }
+
+    this->setNumberOfKeys(this->getNumberOfKeys() - splitted->getNumberOfKeys());
+
+    return splitted; 
 }
 
 string Page::toString()

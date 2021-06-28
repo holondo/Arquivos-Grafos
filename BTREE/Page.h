@@ -1,5 +1,7 @@
 #include "Node.h"
 #include <string>
+#include <iostream>
+#define DEBUG true
 #define PAGESIZE 4096
 #define TREEHEADER PAGESIZE8
 #define MAXKEYS 204
@@ -28,5 +30,6 @@ class Page
 
         int insertRecord(Node *toInsert);
         int keyBinarySearch(int key, int l, int r);
+        Page* split();
         string toString();
 };
