@@ -49,10 +49,9 @@ Node* student::WriteInFile(){
     }
     
     fseek(arq,0,SEEK_END);
-    RRN=ftell(arq)/(STUDENT_SIZE+1);//dando erro
+    RRN=ftell(arq)/STUDENT_SIZE;//dando erro
     justWrite(arq);
-    Node* CurrentNode = new Node(nUSP,RRN);
-
+    Node* CurrentNode = new Node(this->nUSP,RRN);
     fclose(arq);
     return CurrentNode;
 }
@@ -66,23 +65,23 @@ Node* student::UpdateInFile(Node* AttNode){
       cout << "nao foi possivel abrir o arquivo students.bin para a atualizacao"<< endl;
       return NULL;
     }
-    fseek(arq,AttNode->getRRN(),SEEK_SET);
+    fseek(arq,AttNode->getRRN() * STUDENT_SIZE,SEEK_SET);
     justWrite(arq);
     fclose(arq);
-    AttNode->setKey(nUSP);
+    AttNode->setKey(this->nUSP);
     return AttNode;
 }
 
 void student::justWrite(FILE* arq){
   char CopyString[50];
-  fwrite(&nUSP,sizeof(int),1,arq);
-  strcpy(CopyString,nome.c_str());
+  fwrite(&this->nUSP,sizeof(int),1,arq);
+  strcpy(CopyString,this->nome.c_str());
   fwrite(CopyString,MAX_STRING,1,arq);
-  strcpy(CopyString,sobrenome.c_str());
+  strcpy(CopyString,this->sobrenome.c_str());
   fwrite(CopyString,MAX_STRING,1,arq);
-  strcpy(CopyString,curso.c_str());
+  strcpy(CopyString,this->curso.c_str());
   fwrite(CopyString,MAX_STRING,1,arq);
-  fwrite(&nota,sizeof(float),1,arq);
+  fwrite(&this->nota,sizeof(float),1,arq);
 }
 
 void student::transformToCharArray(FILE* arq){

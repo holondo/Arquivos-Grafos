@@ -8,7 +8,7 @@ using namespace std;
 #include "Node.h"
 
 #define MAX_STRING 50
-#define STUDENT_SIZE 162
+#define STUDENT_SIZE 158
 
 class student
 {
