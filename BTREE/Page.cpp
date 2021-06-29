@@ -61,8 +61,8 @@ void Page::insertNodeInOrder(Node* toInsert)
 
 int Page::insertRecord(Node* toInsert)
 {
-    if(toInsert == nullptr || !this->isLeaf())
-        throw "Erro";//ver comofas excessao direito
+    if(toInsert == nullptr)
+        throw (string)"Erro";//ver comofas excessao direito
 
     if(this->isFull())
     {
@@ -121,14 +121,14 @@ int Page::keyBinarySearch(int key, int l, int r)
             return keyBinarySearch(key, l, mid - 1);
 
 
-        if(r == l) 
-        {
-            //if(DEBUG) cout << "L == R. Throw => " << l << '\n';
-            if(key > l) throw l+1;
-            throw l;
-        }
 
         return keyBinarySearch(key, mid + 1, r);
+    }
+    if(r <= l) 
+    {
+        //if(DEBUG) cout << "L == R. Throw => " << l << '\n';
+        if(key > l) throw l+1;
+        throw l;
     }
     return -1;
 }
@@ -146,7 +146,7 @@ Page* Page::split()
     }
 
     if(!this->isLeaf())
-    {   for (int i = mid; i < getNumberOfKeys() + 1; i++)
+    {   for (int i = mid; i < this->getNumberOfKeys() + 1; i++)
         {
             splitted->childs[i - mid] = this->childs[i];
             this->childs[i] = -1;
@@ -158,6 +158,19 @@ Page* Page::split()
     return splitted; 
 }
 
+Node* Page::popSmaller()
+{
+    Node* smaller = this->records[0];
+
+    for (int i = 1; i <= this->getNumberOfKeys(); i++)
+    {
+        this->records[i-1] = this->records[i];
+    }
+    this->setNumberOfKeys(this->getNumberOfKeys() - 1);
+
+    return smaller;    
+}
+
 string Page::toString()
 {
     string toReturn = "";
@@ -165,6 +178,12 @@ string Page::toString()
     {
         toReturn += "Key :" + to_string(this->records[i]->getKey());
         toReturn += "\tRRN :" + to_string(this->records[i]->getRRN()) + '\n';
+    }
+    toReturn += "\t***\n";
+    for (int i = 0; i < this->getNumberOfKeys()+1; i++)
+    {
+        toReturn += "filho => :" + to_string(i);
+        toReturn += "\tRRN :" + to_string(this->childs[i]) + '\n';
     }
     
     return toReturn;
