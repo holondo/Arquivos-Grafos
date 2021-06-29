@@ -1,5 +1,4 @@
 #include "BTREE.hpp"
-#define DEBUG false
 BTREE::BTREE(string recordFileName, string treeFileName)
 {
     this->treeFile = new fstream(treeFileName, ios::in | ios::out | ios::binary);
@@ -33,7 +32,7 @@ long BTREE::getRootRRN()
     return this->rootRRN;
 }
 
-void BTREE::insertStudent(student *toInsert)
+/*void BTREE::insertStudent(student *toInsert)
 {
     if(toInsert == nullptr) throw "Estudante vazio";
     if(DEBUG) cout << "iniciando inserção. Estudante => " << toInsert->getNome() << '\n';
@@ -80,35 +79,118 @@ void BTREE::insertStudent(student *toInsert)
         }
         
     }
+}*/
+
+void BTREE::insertStudent(student *toInsert)
+{
+    if(this->getRootRRN() == -1)
+    {
+        Page* rootPage = new Page();
+        Node* currentNode = toInsert->WriteInFile();
+
+        rootPage->insertRecord(currentNode);
+        
+        this->writePage(rootPage, 0);
+        this->setRoot(0);
+    }
+
+    else
+    {
+        long foundRRN = -1;
+        try
+        {
+            foundRRN = this->searchOnTree(toInsert->getNUSP());
+            if(foundRRN != -1)throw (string)"Registro já inserido!";
+        }
+        catch(ERR_PATH* searchErrorPath)
+        {
+            Node* currentNode = toInsert->WriteInFile();
+            this->recursiveInsertion(currentNode, searchErrorPath);
+            free(currentNode);
+        }
+        
+    }
+}
+
+Page* BTREE::recursiveInsertion(Node* currentNode, ERR_PATH* errorPath)
+{
+    long RRNCur = errorPath->pop();
+
+    Page* currentPage = this->loadPage(RRNCur);
+
+    if(currentPage->isFull())
+    {
+        Page* splittedPage = currentPage->split();
+        splittedPage->insertRecord(currentNode);
+
+        Node* smallerNode = splittedPage->popSmaller();
+        if(DEBUG) cout << "Menor nó => " << smallerNode->getKey() << '\n';
+
+        //If currentPage was the root of the tree
+        if(this->getRootRRN() == RRNCur)
+        {
+            Page* newRootPage = new Page(false);//The root isn't leaf anymore
+
+            newRootPage->insertRecord(smallerNode);
+            newRootPage->childs[0] = this->getRootRRN();//The old root is now the first child
+            newRootPage->childs[newRootPage->getNumberOfKeys()] = this->writePage(splittedPage);
+            this->setRoot(this->writePage(newRootPage));
+        }
+
+        //If currentPage wasn't the root
+        else
+        {
+            Page* motherPage = this->recursiveInsertion(smallerNode, errorPath);
+
+            motherPage->childs[motherPage->getNumberOfKeys()] = this->writePage(splittedPage);
+            this->writePage(motherPage);
+            free(motherPage);
+            free(currentPage);
+            return splittedPage;
+        }
+        return currentPage;//vertbm
+    }
+
+    else
+    {
+        //cout << "\nINSERÇÃO: Pagina com espaço\n\t***\n" << currentPage->toString();
+        currentPage->insertRecord(currentNode);
+        this->writePage(currentPage, RRNCur);
+        return currentPage;
+    }
 }
 
 /*Returns:
             pageRRN if found.
             -1 if not found
     throws:
-            pageRRN if not found && page is leaf
+            ERR_PATH if not found && page is leaf
             -1 if tree is empty*/
 long BTREE::searchOnTree(int key)
 {
-    if(this->getRootRRN() == -1) throw -1;
+    if(this->getRootRRN() == -1) throw -1;//MUDAR P/ ERR
     long pageRRN = -1;
+
+    ERR_PATH *path = new ERR_PATH();
     try
     {
-        pageRRN = this->recursiveSearch(this->getRootRRN(), key);
+        pageRRN = this->recursiveSearch(this->getRootRRN(), key, path);
     }
-    catch(long shouldBe)
+    catch(ERR_PATH* finishedPath)
     {
-        if(DEBUG) cout << "Volta a Search on tree. Chave throw => " << shouldBe << '\n';
-        throw shouldBe;
+        if(DEBUG) cout << "Volta a Search on tree. Chave throw => " << finishedPath->get() << '\n';
+        throw finishedPath;
     }
     return pageRRN;
 }
 
 /*Returns: pageRRN if found.
-    throws:pageRRN if not found && page is leaf*/
-long BTREE::recursiveSearch(long pageRRN, int key)
+    throws:ERR_PATH if not found && page is leaf*/
+long BTREE::recursiveSearch(long pageRRN, int key, ERR_PATH* path)
 {
     Page *currentPage = loadPage(pageRRN);
+    path->push(pageRRN);
+
     if(DEBUG)cout << "Recursive search - Página carregada:\n\t***\n" << currentPage->toString();
     
     int keyPos = -1;
@@ -122,11 +204,30 @@ long BTREE::recursiveSearch(long pageRRN, int key)
     {
         if(DEBUG) cout << "Recursive search - de volta\n\t Proxima pag =>" << currentPage->childs[shouldBe] << '\n';
         if(currentPage->childs[shouldBe] == -1)
-            throw pageRRN;
+            throw path;
 
-        return this->recursiveSearch(currentPage->childs[shouldBe], key);
+        return this->recursiveSearch(currentPage->childs[shouldBe], key, path);
     }    
     return (long)keyPos;//enchendo linguica
+}
+
+void BTREE::updateStudent(student* toUpdate)
+{
+    try
+    {
+        long RRNPage = this->searchOnTree(toUpdate->getNUSP());
+        Page* currentPage = this->loadPage(RRNPage);
+
+        Node* studentRef = currentPage->records[currentPage->keyBinarySearch(toUpdate->getNUSP(), 0, currentPage->getNumberOfKeys() - 1)];
+        toUpdate->UpdateInFile(studentRef);
+        free(currentPage);
+        free(studentRef);
+    }
+    catch(ERR_PATH *e)
+    {
+        throw (string)"Registro não encontrado!";
+    }
+    
 }
 
 void BTREE::writePage(Page* toWrite, long pageRRN)
@@ -165,6 +266,23 @@ void BTREE::writePage(Page* toWrite, long pageRRN)
 
     this->treeFile->write((char *) &shortBuffer, sizeof(short));
     this->treeFile->write((char *) &boolBuffer, sizeof(bool));
+
+    boolBuffer = false;
+    for (int i = 0; i < FREE_SPACE_ON_PAGE; i++)
+    {
+        this->treeFile->write((char *)&boolBuffer, sizeof(bool));
+    }
+    
+}
+
+long BTREE::writePage(Page* toWrite)
+{
+    this->treeFile->seekp( 0, ios::end);
+    int newPageRRN = (this->treeFile->tellp() / PAGESIZE) - 1;
+
+    this->writePage(toWrite, newPageRRN);
+
+    return newPageRRN;
 }
 
 Page* BTREE::loadPage(long pageRRN)
@@ -206,7 +324,7 @@ Page* BTREE::loadPage(long pageRRN)
     }
 
     //Reading childrenArray
-    this->treeFile->seekg( ( ((pageRRN+1) * PAGESIZE) + CHIDREN_RRN_PLACE), ios::beg);
+    this->treeFile->seekg( ( ((pageRRN+1) * PAGESIZE) + CHILDREN_RRN_PLACE), ios::beg);
     for(int i = 0; i < ORDER; i++)
     {   
         this->treeFile->read((char *)&RRNBuffer, sizeof(long));
@@ -221,4 +339,29 @@ void BTREE::close()
     this->treeFile->close();
     this->recordFile->close();
 
+}
+
+/*===============================ERR_PATH===============================*/
+
+ERR_PATH::ERR_PATH()
+{
+    this->top = -1;
+}
+
+void ERR_PATH::push(long RRN)
+{
+    this->top++;
+    this->searchPath[this->top] = RRN;
+}
+
+long ERR_PATH::get()
+{
+    return this->searchPath[this->top];
+}
+
+long ERR_PATH::pop()
+{
+    long returnRNN = this->searchPath[this->top];
+    this->top--;
+    return returnRNN;
 }
