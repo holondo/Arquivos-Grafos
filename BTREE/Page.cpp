@@ -127,7 +127,7 @@ int Page::keyBinarySearch(int key, int l, int r)
     if(r <= l) 
     {
         //if(DEBUG) cout << "L == R. Throw => " << l << '\n';
-        if(key > l) throw l+1;
+        if(l == r) throw l+1;
         throw l;
     }
     return -1;
@@ -153,6 +153,7 @@ Page* Page::split()
         }
     }
 
+    cout << this->getNumberOfKeys() << splitted->getNumberOfKeys();
     this->setNumberOfKeys(this->getNumberOfKeys() - splitted->getNumberOfKeys());
 
     return splitted; 

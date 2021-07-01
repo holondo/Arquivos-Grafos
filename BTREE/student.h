@@ -39,7 +39,7 @@ class student
         string getSobrenome();
         string getCurso();
         float getNota();
-
+        string FormatNota();
         string toString();
 };
 #endif

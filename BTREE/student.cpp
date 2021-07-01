@@ -2,11 +2,11 @@
 
 student::student(int nUSP, string nome, string sobrenome, string curso, float nota)
 {
-    setNUSP(nUSP);
-    setNome(nome);
-    setSobrenome(sobrenome);
-    setCurso(curso);
-    setNota(nota);
+    this->setNUSP(nUSP);
+    this->setNome(nome);
+    this->setSobrenome(sobrenome);
+    this->setCurso(curso);
+    this->setNota(nota);
 }
 
 //File area
@@ -119,7 +119,7 @@ void student::setNome(string nome)
 {
     this->nome = nome;
 }
-void student::setSobrenome(string nome)
+void student::setSobrenome(string sobrenome)
 {
     this->sobrenome = sobrenome;
 }
@@ -154,6 +154,15 @@ float student::getNota()
     return this->nota;
 }
 
+string student::FormatNota(){
+  float Novanota = this->getNota()*100;
+  int Unidade = (int) Novanota;
+  int Decimais = Unidade%100;
+  Unidade =Unidade/100;
+  string UnidadeDecimais = to_string(Unidade)+"."+ to_string(Decimais);
+  return UnidadeDecimais;
+}
+
 string student::toString()
 {
     string toReturn = "−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−\n";
@@ -161,7 +170,7 @@ string student::toString()
     toReturn += "Nome: " + this->getNome() + '\n';
     toReturn += "Sobrenome: " + this->getSobrenome() + '\n';
     toReturn += "Curso: " + this->getCurso() + '\n';
-    toReturn += "Nota: " + to_string(this->getNota()) + '\n'; //toDo: como acertar o ponto flutuante
+    toReturn += "Nota: " + this->FormatNota() + '\n'; //toDo: como acertar o ponto flutuante
     toReturn += "−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−\n";
     return toReturn;
 }
