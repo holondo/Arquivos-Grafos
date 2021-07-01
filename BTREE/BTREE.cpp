@@ -100,7 +100,7 @@ void BTREE::insertStudent(student *toInsert)
         try
         {
             foundRRN = this->searchOnTree(toInsert->getNUSP());
-            if(foundRRN != -1)throw (string)"Registro já inserido!";
+            if(foundRRN != -1)throw (string)"Registro já inserido!\n";
         }
         catch(ERR_PATH* searchErrorPath)
         {
@@ -134,6 +134,7 @@ Page* BTREE::recursiveInsertion(Node* currentNode, ERR_PATH* errorPath)
             newRootPage->insertRecord(smallerNode);
             newRootPage->childs[0] = this->getRootRRN();//The old root is now the first child
             newRootPage->childs[newRootPage->getNumberOfKeys()] = this->writePage(splittedPage);
+            this->writePage(currentPage, RRNCur);
             this->setRoot(this->writePage(newRootPage));
         }
 
@@ -225,9 +226,55 @@ void BTREE::updateStudent(student* toUpdate)
     }
     catch(ERR_PATH *e)
     {
-        throw (string)"Registro não encontrado!";
+        throw (string)"Registro não encontrado!\n";
     }
     
+}
+
+string BTREE::searchStudent(int keyQuery)
+{
+    int foundRRN = -1;
+    try
+    {
+        foundRRN = this->searchOnTree(keyQuery);
+    }
+    catch(ERR_PATH* e)
+    {
+        free(e);
+        return (string) "Registro nao encontrado!\n";
+    }
+
+    Page* foundPage = this->loadPage(foundRRN);
+    Node* foundNode = foundPage->records[foundPage->keyBinarySearch(keyQuery, 0, foundPage->getNumberOfKeys() -1)];
+
+    student* foundStudent = this->loadStudent(foundNode->getRRN());
+
+    string content = foundStudent->toString();
+
+    free(foundPage);
+    free(foundNode);
+    free(foundStudent);
+    return content;
+}
+
+student* BTREE::loadStudent(long studentRRN)
+{
+    this->recordFile->seekg(studentRRN * STUDENT_SIZE, ios::beg);
+
+    int nUSP;
+    char nome[MAX_STRING];
+    char sobrenome[MAX_STRING];
+    char curso[MAX_STRING];
+    float nota;
+
+    this->recordFile->read((char *)&nUSP, sizeof(int));
+    this->recordFile->read((char *)nome, sizeof(char) * MAX_STRING);
+    this->recordFile->read((char *)sobrenome, sizeof(char) * MAX_STRING);
+    this->recordFile->read((char *)curso, sizeof(char) * MAX_STRING);
+    this->recordFile->read((char *)&nota, sizeof(float));
+
+    student* toReturn = new student(nUSP, (string)nome, (string)sobrenome, (string)curso, nota);
+    return toReturn;
 }
 
 void BTREE::writePage(Page* toWrite, long pageRRN)

@@ -37,6 +37,8 @@ class BTREE
         void insertStudent(student *toInsert);
         long searchOnTree(int key);
         void updateStudent(student* toUpdate);
+        string searchStudent(int keyQuery);
+        student* loadStudent(long studentRRN);
 
         void setRoot(long nodeRRN);
         Node* getNode(long nodeRRN);
