@@ -1,5 +1,7 @@
 import sys
 from PointVertex import PointVertexMatrix, euclidianDistance
+INFINITE = sys.maxsize
+
 class MatrixGraph:
     vertices = dict()
     edges = list() #Inicializar com matrix
@@ -68,7 +70,7 @@ class MatrixGraph:
 
         #Initializes the distanceMatrix with max
         for i in range(self.numberOfVertices):
-            distanceMatrix.append([sys.maxsize] * self.numberOfVertices)
+            distanceMatrix.append([INFINITE] * self.numberOfVertices)
 
         for i in range(self.numberOfVertices):
             distanceMatrix[i][i] = 0
@@ -77,29 +79,51 @@ class MatrixGraph:
                 if(self.edges[i][j] != 0):
                     distanceMatrix[i][j] = self.edges[i][j]
                 
-        for i in range(self.numberOfVertices):
-            for j in range(self.numberOfVertices):
-                for k in range(self.numberOfVertices):
-                    distanceMatrix[i][j] = min(distanceMatrix[i][j], (distanceMatrix[i][k] + distanceMatrix[k][j]) )
-
+        for k in range(self.numberOfVertices):
+            for i in range(self.numberOfVertices):
+                for j in range(self.numberOfVertices):
+                    if((distanceMatrix[i][k] + distanceMatrix[k][j]) < (distanceMatrix[i][j])):
+                        distanceMatrix[i][j] = (distanceMatrix[i][k] + distanceMatrix[k][j])
         return distanceMatrix
 
     def getExcentricityList(self):
         distanceMatrix = self.FloydMarshall()
         excentricityList = ([-1] * self.numberOfVertices)
         for i in range(self.numberOfVertices):
+            #print(list(self.vertices.keys()).index(i))
             for j in range(self.numberOfVertices):
-                    if distanceMatrix[j][i] != sys.maxsize:
-                        excentricityList[i] = max(excentricityList[i], distanceMatrix[j][i])
+
+                # if distanceMatrix[j][i] == sys.maxsize:#se o vertex que chega em i é infinito
+                #     if excentricityList[i] == -1:
+                #         excentricityList[i] = distanceMatrix[j][i]
+
+                # elif excentricityList == sys.maxsize:
+                #     if distanceMatrix[j][i] != 0:
+                #         excentricityList[i] = min(excentricityList[i], distanceMatrix[j][i])#Max cost of i
+
+                # else: excentricityList[i] = max(excentricityList[i], distanceMatrix[j][i])   
+                if(distanceMatrix[j][i] != INFINITE):
+                    excentricityList[i] = max(distanceMatrix[j][i], excentricityList[i])   
+                
         return excentricityList
 
     def centralVertex(self, excentricityList):
-        biggest = -1
+        smaller = sys.maxsize
+        currentSmaller = None
+        for vertex in self.verticesIndex.items():#(name, index)
+            if excentricityList[vertex[1]] != 0 and excentricityList[vertex[1]] < smaller:
+                currentSmaller = vertex
+                smaller = excentricityList[vertex[1]]
+        if currentSmaller != None:
+            return self.vertices[currentSmaller[0]]
+
+    def peripheralVertex(self, excentricityList):
+        bigger = -1
         currentBigger = None
         for vertex in self.verticesIndex.items():
-            if excentricityList[vertex[1]] > biggest:
+            if excentricityList[vertex[1]] > bigger:
                 currentBigger = vertex
-                biggest = excentricityList[vertex[1]]
+                bigger = excentricityList[vertex[1]]
         if currentBigger != None:
             return self.vertices[currentBigger[0]]
     
@@ -108,16 +132,17 @@ class MatrixGraph:
             distanceMatrix = self.FloydMarshall()
             greatestDistance = 0
             farthest = None
+            index = self.verticesIndex[originVertex.getName()]
             for vertex in self.verticesIndex.items():
-                index = self.verticesIndex[originVertex.getName()]
                 currentDistance = distanceMatrix[index][vertex[1]]
 
-                if currentDistance != sys.maxsize:
-                    if currentDistance > greatestDistance:
-                        farthest = vertex
-                        greatestDistance = currentDistance
+                #if currentDistance != sys.maxsize:
+                if currentDistance > greatestDistance:
+                    #print("cur "+  str(currentDistance))
+                    farthest = vertex
+                    greatestDistance = currentDistance
             
-            if farthest: 
+            if farthest != None: 
                 farthest = self.vertices[farthest[0]]
                 return farthest
         return originVertex
