@@ -41,7 +41,8 @@ class PointVertex:
         return False;
 
 def euclidianDistance(pointOne, pointTwo):
-    return math.sqrt( pow(pointOne.getX() - pointTwo.getX(), 2) + pow(pointOne.getY() - pointTwo.getY(), 2))
+    return math.sqrt((pow(pointOne.getX()-pointTwo.getX(), 2)) + pow(pointOne.getY()-pointTwo.getY(), 2))
+
 
 
 class PointVertexMatrix:
